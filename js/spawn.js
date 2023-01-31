@@ -32,12 +32,12 @@ const spawn = {
         "laser", "laser",
         "pulsar", "pulsar",
         "sneaker", "sneaker",
-        "launcher", "launcherOne", "exploder", "sucker", "sniper", "spinner", "grower", "beamer", "spawner", "ghoster",
+        "launcher", "launcherOne", "exploder", "sucker", "sniper", "spinner", "grower", "beamer", "spawner", "ghoster", "speeder"
         //, "focuser"
     ],
     mobTypeSpawnOrder: [], //preset list of mob names calculated at the start of a run by the randomSeed
     mobTypeSpawnIndex: 0, //increases as the mob type cycles
-    allowedGroupList: ["spinner", "striker", "springer", "laser", "focuser", "beamer", "exploder", "spawner", "shooter", "launcher", "launcherOne", "stabber", "sniper", "pulsar", "grenadier", "slasher", "flutter"],
+    allowedGroupList: ["spinner", "striker", "springer", "laser", "focuser", "beamer", "exploder", "spawner", "shooter", "launcher", "launcherOne", "stabber", "sniper", "pulsar", "grenadier", "slasher", "flutter", "speeder"],
     setSpawnList() { //this is run at the start of each new level to determine the possible mobs for the level
         spawn.pickList.splice(0, 1);
         const push = spawn.mobTypeSpawnOrder[spawn.mobTypeSpawnIndex++ % spawn.mobTypeSpawnOrder.length]
@@ -2367,6 +2367,23 @@ const spawn = {
     //         this.attraction();
     //     };
     // },
+    speeder(x, y, radius = 15 + Math.ceil(Math.random() * 20)) {
+         mobs.spawn(x, y, 6, radius, "rgb(255,255,0)");
+         let me = mob[mob.length - 1];
+         // Matter.Body.setDensity(me, 0.0007); //extra dense //normal is 0.001 //makes effective life much lower
+         me.friction = 0.1;
+         me.frictionAir = 0;
+         me.accelMag = 0.1 * Math.sqrt(simulation.accelScale);
+         me.g = me.accelMag * 0.6; //required if using this.gravity
+         me.memory = 180;
+         spawn.shield(me, x, y);
+         me.do = function() {
+             this.gravity();
+             this.seePlayerByLookingAt();
+             this.checkStatus();
+             this.attraction();
+         };
+    },
     grower(x, y, radius = 15) {
         mobs.spawn(x, y, 7, radius, "hsl(144, 15%, 50%)");
         let me = mob[mob.length - 1];
